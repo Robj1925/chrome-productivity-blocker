@@ -1,0 +1,19 @@
+# Reference-only docs (not part of the shipped extension)
+STORE_LISTING.md
+
+# Packaged upload artifacts
+*.zip
+*.crx
+*.pem
+
+# macOS / OS junk
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+
+# Dependencies (not used, but guard against accidental commits)
+node_modules/
