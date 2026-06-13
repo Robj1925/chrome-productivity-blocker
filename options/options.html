@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Productivity Blocker — Settings</title>
+  <script src="../utils/hash.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0f172a;
+      color: #f1f5f9;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 40px 32px;
+      max-width: 580px;
+    }
+    h1 { font-size: 22px; font-weight: 700; margin-bottom: 36px; color: #f8fafc; }
+    section { margin-bottom: 36px; }
+    h2 {
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 14px;
+    }
+    .card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 22px;
+    }
+    label {
+      font-size: 13px;
+      color: #cbd5e1;
+      display: block;
+      margin-bottom: 6px;
+    }
+    input[type="time"],
+    input[type="password"] {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 7px;
+      color: #f1f5f9;
+      font-size: 14px;
+      padding: 9px 13px;
+      outline: none;
+      transition: border-color 0.15s;
+      display: block;
+      margin-bottom: 16px;
+      width: 100%;
+    }
+    input[type="time"]:focus,
+    input[type="password"]:focus { border-color: #6366f1; }
+    .hours-row { display: flex; gap: 16px; }
+    .hours-row .field { flex: 1; }
+    button.save {
+      background: #6366f1;
+      border: none;
+      border-radius: 7px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 10px 20px;
+      transition: background 0.15s;
+    }
+    button.save:hover { background: #4f46e5; }
+    .msg { font-size: 12px; margin-top: 10px; min-height: 16px; }
+    .msg-success { color: #4ade80; }
+    .msg-error { color: #fb7185; }
+    .site-list { display: flex; flex-direction: column; }
+    .site-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #334155;
+    }
+    .site-item:last-child { border-bottom: none; }
+    .site-domain { font-size: 13px; font-weight: 500; color: #e2e8f0; }
+    .site-category { font-size: 11px; color: #64748b; margin-top: 1px; }
+    input[type="checkbox"] {
+      width: 17px;
+      height: 17px;
+      cursor: pointer;
+      accent-color: #6366f1;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Settings</h1>
+
+  <section>
+    <h2>Work Hours</h2>
+    <div class="card">
+      <div class="hours-row">
+        <div class="field">
+          <label for="workStart">Start</label>
+          <input type="time" id="workStart" value="09:00" />
+        </div>
+        <div class="field">
+          <label for="workEnd">End</label>
+          <input type="time" id="workEnd" value="17:00" />
+        </div>
+      </div>
+      <button class="save" id="saveHours">Save hours</button>
+      <div class="msg" id="hoursMsg"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Bypass Password</h2>
+    <div class="card">
+      <label for="currentPassword">Current password</label>
+      <input type="password" id="currentPassword" placeholder="Leave blank if not yet set" autocomplete="current-password" />
+      <label for="newPassword">New password</label>
+      <input type="password" id="newPassword" placeholder="New password" autocomplete="new-password" />
+      <label for="confirmPassword">Confirm new password</label>
+      <input type="password" id="confirmPassword" placeholder="Confirm password" autocomplete="new-password" />
+      <button class="save" id="savePassword">Save password</button>
+      <div class="msg" id="passwordMsg"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Blocked Sites</h2>
+    <div class="card">
+      <div class="site-list" id="siteList"></div>
+    </div>
+  </section>
+
+  <script src="options.js"></script>
+</body>
+</html>

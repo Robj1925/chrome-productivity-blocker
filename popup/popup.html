@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Productivity Blocker</title>
+  <script src="../utils/hash.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 260px;
+      background: #0f172a;
+      color: #f1f5f9;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 16px;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .title { font-size: 13px; font-weight: 700; color: #e2e8f0; }
+    .badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 999px;
+    }
+    .badge-on { background: #fde8e8; color: #dc2626; }
+    .badge-off { background: #dcfce7; color: #16a34a; }
+    .row {
+      background: #1e293b;
+      border-radius: 8px;
+      padding: 9px 12px;
+      margin-bottom: 7px;
+    }
+    .row-label { font-size: 10px; color: #64748b; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .row-value { font-size: 13px; color: #f1f5f9; }
+    .bypass-active {
+      background: #1e3a2f;
+      border: 1px solid #166534;
+      border-radius: 8px;
+      padding: 9px 12px;
+      margin-bottom: 7px;
+    }
+    .bypass-active .row-label { color: #4ade80; }
+    .bypass-active .row-value { color: #86efac; }
+    .divider { border: none; border-top: 1px solid #1e293b; margin: 10px 0; }
+    .bypass-section {}
+    .bypass-label { font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }
+    .input-row { display: flex; gap: 6px; }
+    input[type="password"] {
+      flex: 1;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      color: #f1f5f9;
+      font-size: 12px;
+      padding: 7px 10px;
+      outline: none;
+    }
+    input[type="password"]:focus { border-color: #6366f1; }
+    button.bypass-btn {
+      background: #6366f1;
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 7px 10px;
+    }
+    button.bypass-btn:hover { background: #4f46e5; }
+    .error { color: #fb7185; font-size: 11px; margin-top: 6px; min-height: 14px; }
+    .settings-link {
+      display: block;
+      text-align: center;
+      color: #6366f1;
+      font-size: 11px;
+      margin-top: 12px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      width: 100%;
+      padding: 0;
+    }
+    .settings-link:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <span class="title">Productivity Blocker</span>
+    <span class="badge" id="statusBadge">—</span>
+  </div>
+
+  <div class="row">
+    <div class="row-label">Work hours</div>
+    <div class="row-value" id="workHours">9:00 AM – 5:00 PM</div>
+  </div>
+
+  <div class="row">
+    <div class="row-label" id="nextLabel">Next change</div>
+    <div class="row-value" id="nextTime">—</div>
+  </div>
+
+  <div class="bypass-active" id="bypassRow" style="display:none">
+    <div class="row-label">Bypass active</div>
+    <div class="row-value" id="bypassCountdown">—</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="bypass-section" id="bypassSection">
+    <div class="bypass-label">Emergency bypass — 15 min</div>
+    <div class="input-row">
+      <input type="password" id="passwordInput" placeholder="Bypass password" autocomplete="off" />
+      <button class="bypass-btn" id="bypassBtn">Unlock</button>
+    </div>
+    <div class="error" id="errorMsg"></div>
+  </div>
+
+  <button class="settings-link" id="settingsBtn">Settings</button>
+  <script src="popup.js"></script>
+</body>
+</html>

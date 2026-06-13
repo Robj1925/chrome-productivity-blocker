@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Site Blocked</title>
+  <script src="../utils/hash.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0f172a;
+      color: #f1f5f9;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 48px 40px;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+    .icon { font-size: 52px; margin-bottom: 20px; }
+    .site-name {
+      font-size: 22px;
+      font-weight: 700;
+      color: #fb7185;
+      margin-bottom: 6px;
+    }
+    .subtitle {
+      font-size: 13px;
+      color: #94a3b8;
+      margin-bottom: 4px;
+    }
+    .countdown {
+      font-size: 13px;
+      color: #64748b;
+      margin-bottom: 36px;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #334155;
+      margin: 0 0 28px;
+    }
+    .bypass-label {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .input-row {
+      display: flex;
+      gap: 8px;
+    }
+    input[type="password"] {
+      flex: 1;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      color: #f1f5f9;
+      font-size: 14px;
+      padding: 10px 14px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    input[type="password"]:focus { border-color: #6366f1; }
+    button {
+      background: #6366f1;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 10px 16px;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+    button:hover { background: #4f46e5; }
+    .error-msg {
+      color: #fb7185;
+      font-size: 12px;
+      margin-top: 10px;
+      min-height: 16px;
+    }
+    .footer {
+      margin-top: 36px;
+      color: #334155;
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-5px); }
+      80% { transform: translateX(5px); }
+    }
+    .shake { animation: shake 0.35s ease; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon">🚫</div>
+    <div class="site-name" id="siteName">Site blocked</div>
+    <div class="subtitle" id="workHours">Work hours: 9:00 AM – 5:00 PM</div>
+    <div class="countdown" id="countdown"></div>
+    <hr>
+    <div class="bypass-label">Emergency bypass — 15 minutes</div>
+    <div class="input-row">
+      <input type="password" id="passwordInput" placeholder="Bypass password" autocomplete="off" />
+      <button id="bypassBtn">Unlock</button>
+    </div>
+    <div class="error-msg" id="errorMsg"></div>
+    <div class="footer">Productivity Blocker</div>
+  </div>
+  <script src="blocked.js"></script>
+</body>
+</html>

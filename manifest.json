@@ -1,0 +1,53 @@
+{
+  "manifest_version": 3,
+  "name": "Productivity Blocker",
+  "version": "1.0.0",
+  "description": "Blocks distracting websites during work hours (9am–5pm).",
+  "permissions": [
+    "declarativeNetRequest",
+    "storage",
+    "alarms",
+    "tabs"
+  ],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "options_page": "options/options.html",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://www.youtube.com/*", "*://youtube.com/*"],
+      "js": ["content-scripts/youtube.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["*://www.linkedin.com/*", "*://linkedin.com/*"],
+      "js": ["content-scripts/linkedin.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["*://www.facebook.com/*", "*://facebook.com/*"],
+      "js": ["content-scripts/facebook.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["blocked/blocked.html"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
