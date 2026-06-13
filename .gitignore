@@ -6,6 +6,10 @@ STORE_LISTING.md
 *.crx
 *.pem
 
+# Store listing assets (raw screenshots in root + processed set) — not part of the extension
+/*.png
+store-screenshots/
+
 # macOS / OS junk
 .DS_Store
 Thumbs.db
