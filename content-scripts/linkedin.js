@@ -19,10 +19,12 @@
   `;
 
   // On the feed page only: blank the entire center column so nothing renders there.
-  // Scoped by path so profiles/jobs/messaging are untouched.
+  // Target the semantic <main>/[role="main"] element (stable across LinkedIn's
+  // frequent class renames). Scoped by path so profiles/jobs/messaging are untouched.
   const FEED_CSS = `
+    main,
+    [role="main"],
     .scaffold-layout__main,
-    main.scaffold-layout__main,
     .scaffold-finite-scroll,
     .scaffold-finite-scroll__content,
     [data-finite-scroll-hotkey-context="FEED"] {
