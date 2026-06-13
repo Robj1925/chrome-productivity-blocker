@@ -1,3 +1,18 @@
+const PATH_BLOCK_RULES = [
+  {
+    id: 101,
+    priority: 1,
+    action: { type: "redirect", redirect: { extensionPath: "/blocked/blocked.html?site=linkedin.com" } },
+    condition: { urlFilter: "||linkedin.com/feed^", resourceTypes: ["main_frame"] }
+  },
+  {
+    id: 102,
+    priority: 1,
+    action: { type: "redirect", redirect: { extensionPath: "/blocked/blocked.html?site=youtube.com" } },
+    condition: { urlFilter: "||youtube.com/shorts^", resourceTypes: ["main_frame"] }
+  }
+];
+
 const FULL_BLOCK_DOMAINS = [
   "twitter.com", "x.com", "tiktok.com", "instagram.com", "threads.net",
   "pinterest.com", "tumblr.com", "discord.com", "reddit.com", "old.reddit.com",
@@ -52,7 +67,7 @@ async function getNextAlarmTimes(workStart, workEnd) {
 
 async function enableBlocking(siteToggles) {
   const enabled = FULL_BLOCK_DOMAINS.filter(d => siteToggles[d] !== false);
-  const rules = buildRules(enabled);
+  const rules = [...buildRules(enabled), ...PATH_BLOCK_RULES];
   const existing = await chrome.declarativeNetRequest.getDynamicRules();
   await chrome.declarativeNetRequest.updateDynamicRules({
     removeRuleIds: existing.map(r => r.id),

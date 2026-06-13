@@ -8,13 +8,17 @@
     ytd-rich-section-renderer,
     ytd-shelf-renderer,
     ytd-reel-shelf-renderer,
+    ytd-rich-shelf-renderer[tab-id="shorts"],
     #secondary,
     #related,
     ytd-compact-video-renderer,
     ytd-autoplay-renderer,
     ytd-watch-next-secondary-results-renderer,
     ytd-masthead #chips-wrapper,
-    ytd-browse[page-subtype="home"] #contents {
+    ytd-browse[page-subtype="home"] #contents,
+    ytd-guide-entry-renderer:has(a[href="/shorts"]),
+    ytd-mini-guide-entry-renderer:has(a[href="/shorts"]),
+    yt-chip-cloud-chip-renderer:has(a[href*="shorts"]) {
       display: none !important;
     }
   `;
@@ -24,7 +28,7 @@
       const s = document.createElement("style");
       s.id = STYLE_ID;
       s.textContent = CSS;
-      document.head.appendChild(s);
+      (document.head || document.documentElement).appendChild(s);
     }
   }
 
