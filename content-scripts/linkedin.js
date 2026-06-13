@@ -4,31 +4,45 @@
 
   const STYLE_ID = "pb-linkedin-hide";
 
-  // Prioritise data-attribute selectors (stable) over class names (fragile)
-  const CSS = `
-    [data-finite-scroll-hotkey-context],
+  // Hidden everywhere on LinkedIn: feed posts and feed widgets, wherever they appear.
+  const GLOBAL_CSS = `
     [data-urn*="urn:li:activity"],
     .occludable-update,
-    .scaffold-finite-scroll__content,
+    .feed-shared-update-v2,
     .feed-following-feed,
-    .feed-outlet,
     .share-box-feed-entry,
     .share-box-feed-entry__trigger-wrapper,
     .news-module,
-    aside.scaffold-layout__aside,
-    .scaffold-layout__aside,
     [data-view-name="cohort-feed"] {
       display: none !important;
     }
   `;
 
-  function inject() {
-    if (!document.getElementById(STYLE_ID)) {
-      const s = document.createElement("style");
-      s.id = STYLE_ID;
-      s.textContent = CSS;
-      (document.head || document.documentElement).appendChild(s);
+  // On the feed page only: blank the entire center column so nothing renders there.
+  // Scoped by path so profiles/jobs/messaging are untouched.
+  const FEED_CSS = `
+    .scaffold-layout__main,
+    main.scaffold-layout__main,
+    .scaffold-finite-scroll,
+    .scaffold-finite-scroll__content,
+    [data-finite-scroll-hotkey-context="FEED"] {
+      display: none !important;
     }
+  `;
+
+  function onFeed() {
+    return location.pathname === "/feed" || location.pathname.startsWith("/feed/");
+  }
+
+  function inject() {
+    let style = document.getElementById(STYLE_ID);
+    if (!style) {
+      style = document.createElement("style");
+      style.id = STYLE_ID;
+      (document.head || document.documentElement).appendChild(style);
+    }
+    const wanted = GLOBAL_CSS + (onFeed() ? FEED_CSS : "");
+    if (style.textContent !== wanted) style.textContent = wanted;
   }
 
   function eject() {
@@ -40,7 +54,7 @@
   const observer = new MutationObserver(inject);
   observer.observe(document.documentElement, { subtree: true, childList: true });
 
-  // Catch SPA navigation to /feed (popstate fires when LinkedIn's router changes the URL)
+  // LinkedIn is an SPA; re-evaluate which CSS applies when the route changes.
   window.addEventListener("popstate", inject);
 
   chrome.runtime.onMessage.addListener(msg => {
