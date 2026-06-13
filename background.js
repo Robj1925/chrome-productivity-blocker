@@ -1,10 +1,6 @@
+// LinkedIn feed is handled purely by the content script (blanked, not redirected).
+// Only YouTube Shorts URLs get a network-level redirect.
 const PATH_BLOCK_RULES = [
-  {
-    id: 101,
-    priority: 1,
-    action: { type: "redirect", redirect: { extensionPath: "/blocked/blocked.html?site=linkedin.com" } },
-    condition: { urlFilter: "||linkedin.com/feed^", resourceTypes: ["main_frame"] }
-  },
   {
     id: 102,
     priority: 1,
@@ -129,21 +125,28 @@ function notifyContentScripts(message) {
   });
 }
 
-chrome.runtime.onInstalled.addListener(async () => {
-  await chrome.storage.sync.set({
-    workStart: "09:00",
-    workEnd: "17:00",
-    blockingActive: false,
-    bypassUntil: null,
-    siteToggles: {},
-    passwordHash: null
-  });
+chrome.runtime.onInstalled.addListener(async (details) => {
+  // Only seed defaults on first install — never wipe the user's password/toggles on reload or update.
+  if (details.reason === "install") {
+    await chrome.storage.sync.set({
+      workStart: "09:00",
+      workEnd: "17:00",
+      blockingActive: false,
+      bypassUntil: null,
+      siteToggles: {},
+      passwordHash: null
+    });
+  }
   await reconcileState();
 });
 
 chrome.runtime.onStartup.addListener(async () => {
   await reconcileState();
 });
+
+// Runs on every service-worker cold start (including extension reload) so dynamic
+// rules are re-synced to the current schedule even if no event listener fires.
+reconcileState();
 
 chrome.alarms.onAlarm.addListener(async alarm => {
   const data = await chrome.storage.sync.get({

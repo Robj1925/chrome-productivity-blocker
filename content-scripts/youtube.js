@@ -8,7 +8,7 @@
     ytd-rich-section-renderer,
     ytd-shelf-renderer,
     ytd-reel-shelf-renderer,
-    ytd-rich-shelf-renderer[tab-id="shorts"],
+    ytd-rich-shelf-renderer[is-shorts],
     #secondary,
     #related,
     ytd-compact-video-renderer,
@@ -17,7 +17,9 @@
     ytd-masthead #chips-wrapper,
     ytd-browse[page-subtype="home"] #contents,
     ytd-guide-entry-renderer:has(a[href="/shorts"]),
+    ytd-guide-entry-renderer:has(a[title="Shorts"]),
     ytd-mini-guide-entry-renderer:has(a[href="/shorts"]),
+    ytd-mini-guide-entry-renderer:has(a[title="Shorts"]),
     yt-chip-cloud-chip-renderer:has(a[href*="shorts"]) {
       display: none !important;
     }
