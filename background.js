@@ -6,6 +6,13 @@ const PATH_BLOCK_RULES = [
     priority: 1,
     action: { type: "redirect", redirect: { extensionPath: "/blocked/blocked.html?site=youtube.com" } },
     condition: { urlFilter: "||youtube.com/shorts^", resourceTypes: ["main_frame"] }
+  },
+  {
+    // YouTube homepage -> Subscriptions feed
+    id: 103,
+    priority: 1,
+    action: { type: "redirect", redirect: { url: "https://www.youtube.com/feed/subscriptions" } },
+    condition: { regexFilter: "^https?://(www\\.)?youtube\\.com/$", resourceTypes: ["main_frame"] }
   }
 ];
 
