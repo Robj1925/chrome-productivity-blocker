@@ -92,17 +92,18 @@ document.getElementById("savePassword").addEventListener("click", async () => {
   if (!newInput) { showMsg("passwordMsg", "New password cannot be empty.", "error"); return; }
   if (newInput !== confirmInput) { showMsg("passwordMsg", "Passwords do not match.", "error"); return; }
 
-  const { passwordHash } = await chrome.storage.sync.get({ passwordHash: null });
+  const { passwordHash, passwordSalt } = await chrome.storage.sync.get({ passwordHash: null, passwordSalt: null });
   if (passwordHash) {
-    const currentHash = await hashPassword(currentInput);
+    const currentHash = await hashPassword(currentInput, passwordSalt);
     if (currentHash !== passwordHash) {
       showMsg("passwordMsg", "Current password is incorrect.", "error");
       return;
     }
   }
 
-  const newHash = await hashPassword(newInput);
-  await chrome.storage.sync.set({ passwordHash: newHash });
+  const salt = generateSalt();
+  const newHash = await hashPassword(newInput, salt);
+  await chrome.storage.sync.set({ passwordHash: newHash, passwordSalt: salt });
   document.getElementById("currentPassword").value = "";
   document.getElementById("newPassword").value = "";
   document.getElementById("confirmPassword").value = "";

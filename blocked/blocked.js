@@ -44,7 +44,8 @@ async function attemptBypass() {
     return;
   }
 
-  const hash = await hashPassword(password);
+  const { passwordSalt } = await chrome.storage.sync.get({ passwordSalt: null });
+  const hash = await hashPassword(password, passwordSalt);
   errorEl.textContent = "";
 
   try {

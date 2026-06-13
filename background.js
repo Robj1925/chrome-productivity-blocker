@@ -141,7 +141,8 @@ chrome.runtime.onInstalled.addListener(async (details) => {
       blockingActive: false,
       bypassUntil: null,
       siteToggles: {},
-      passwordHash: null
+      passwordHash: null,
+      passwordSalt: null
     });
   }
   await reconcileState();

@@ -64,7 +64,8 @@ async function attemptBypass() {
   const password = input.value.trim();
   if (!password) { errorEl.textContent = "Enter bypass password."; return; }
 
-  const hash = await hashPassword(password);
+  const { passwordSalt } = await chrome.storage.sync.get({ passwordSalt: null });
+  const hash = await hashPassword(password, passwordSalt);
   try {
     const res = await chrome.runtime.sendMessage({ type: "REQUEST_BYPASS", hash });
     if (res.success) {
