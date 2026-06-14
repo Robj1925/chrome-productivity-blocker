@@ -41,6 +41,16 @@ function buildRules(domains) {
   }));
 }
 
+// Every rule ID this extension may ever create. Used as removeRuleIds so each
+// update fully clears managed rules before re-adding — race-safe even if two
+// enable/disable calls overlap (e.g. the startup reconcile and an alarm).
+function allManagedRuleIds() {
+  return [
+    ...FULL_BLOCK_DOMAINS.map((_, i) => i + 1),
+    ...PATH_BLOCK_RULES.map(r => r.id)
+  ];
+}
+
 function isWorkHours(workStart, workEnd) {
   const now = new Date();
   const current = now.getHours() * 60 + now.getMinutes();
@@ -72,19 +82,15 @@ async function enableBlocking(siteToggles) {
   const enabled = FULL_BLOCK_DOMAINS.filter(d => siteToggles[d] !== false);
   const rules = [...buildRules(enabled), ...PATH_BLOCK_RULES];
   const existing = await chrome.declarativeNetRequest.getDynamicRules();
-  await chrome.declarativeNetRequest.updateDynamicRules({
-    removeRuleIds: existing.map(r => r.id),
-    addRules: rules
-  });
+  const removeRuleIds = [...new Set([...existing.map(r => r.id), ...allManagedRuleIds()])];
+  await chrome.declarativeNetRequest.updateDynamicRules({ removeRuleIds, addRules: rules });
   await chrome.storage.sync.set({ blockingActive: true });
 }
 
 async function disableBlocking() {
   const existing = await chrome.declarativeNetRequest.getDynamicRules();
-  await chrome.declarativeNetRequest.updateDynamicRules({
-    removeRuleIds: existing.map(r => r.id),
-    addRules: []
-  });
+  const removeRuleIds = [...new Set([...existing.map(r => r.id), ...allManagedRuleIds()])];
+  await chrome.declarativeNetRequest.updateDynamicRules({ removeRuleIds, addRules: [] });
   await chrome.storage.sync.set({ blockingActive: false });
 }
 
