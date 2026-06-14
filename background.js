@@ -51,6 +51,16 @@ function allManagedRuleIds() {
   ];
 }
 
+// Serialize all dynamic-rule updates. Two overlapping enable/disable calls
+// (e.g. the startup reconcile and an alarm firing together) would otherwise
+// race and throw "Rule with id N does not have a unique ID."
+let ruleQueue = Promise.resolve();
+function queueRuleUpdate(task) {
+  const run = ruleQueue.then(task, task);
+  ruleQueue = run.catch(() => {});
+  return run;
+}
+
 function isWorkHours(workStart, workEnd) {
   const now = new Date();
   const current = now.getHours() * 60 + now.getMinutes();
@@ -81,16 +91,20 @@ async function getNextAlarmTimes(workStart, workEnd) {
 async function enableBlocking(siteToggles) {
   const enabled = FULL_BLOCK_DOMAINS.filter(d => siteToggles[d] !== false);
   const rules = [...buildRules(enabled), ...PATH_BLOCK_RULES];
-  const existing = await chrome.declarativeNetRequest.getDynamicRules();
-  const removeRuleIds = [...new Set([...existing.map(r => r.id), ...allManagedRuleIds()])];
-  await chrome.declarativeNetRequest.updateDynamicRules({ removeRuleIds, addRules: rules });
+  await queueRuleUpdate(async () => {
+    const existing = await chrome.declarativeNetRequest.getDynamicRules();
+    const removeRuleIds = [...new Set([...existing.map(r => r.id), ...allManagedRuleIds()])];
+    await chrome.declarativeNetRequest.updateDynamicRules({ removeRuleIds, addRules: rules });
+  });
   await chrome.storage.sync.set({ blockingActive: true });
 }
 
 async function disableBlocking() {
-  const existing = await chrome.declarativeNetRequest.getDynamicRules();
-  const removeRuleIds = [...new Set([...existing.map(r => r.id), ...allManagedRuleIds()])];
-  await chrome.declarativeNetRequest.updateDynamicRules({ removeRuleIds, addRules: [] });
+  await queueRuleUpdate(async () => {
+    const existing = await chrome.declarativeNetRequest.getDynamicRules();
+    const removeRuleIds = [...new Set([...existing.map(r => r.id), ...allManagedRuleIds()])];
+    await chrome.declarativeNetRequest.updateDynamicRules({ removeRuleIds, addRules: [] });
+  });
   await chrome.storage.sync.set({ blockingActive: false });
 }
 
