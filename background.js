@@ -200,8 +200,10 @@ chrome.alarms.onAlarm.addListener(async alarm => {
     const fresh = await chrome.storage.sync.get({ workStart: "09:00", workEnd: "17:00", siteToggles: {} });
     if (isWorkHours(fresh.workStart, fresh.workEnd)) {
       await enableBlocking(fresh.siteToggles);
-      notifyContentScripts({ type: "BYPASS_EXPIRED" });
     }
+    // Always notify: the 24/7 feed scripts (twitter/tiktok) need this even
+    // outside work hours. Work-hours scripts re-check blockingActive themselves.
+    notifyContentScripts({ type: "BYPASS_EXPIRED" });
   }
 });
 

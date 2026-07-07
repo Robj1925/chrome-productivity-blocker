@@ -39,8 +39,11 @@
       eject();
     }
     if (msg.type === "BYPASS_EXPIRED") {
-      inject();
-      observer.observe(document.documentElement, { subtree: true, childList: true });
+      chrome.storage.sync.get({ blockingActive: false }).then(({ blockingActive }) => {
+        if (!blockingActive) return;
+        inject();
+        observer.observe(document.documentElement, { subtree: true, childList: true });
+      });
     }
   });
 })();
