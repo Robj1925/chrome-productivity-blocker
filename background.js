@@ -16,6 +16,18 @@ const PATH_BLOCK_RULES = [
   }
 ];
 
+// Higher-priority "allow" exemptions: paths that must stay reachable even when
+// their domain is otherwise fully blocked. priority 2 beats the block rules (1).
+const ALLOW_RULES = [
+  {
+    // TikTok Studio (creator dashboard) — never block it
+    id: 104,
+    priority: 2,
+    action: { type: "allow" },
+    condition: { urlFilter: "||tiktok.com/tiktokstudio", resourceTypes: ["main_frame"] }
+  }
+];
+
 const FULL_BLOCK_DOMAINS = [
   "twitter.com", "x.com", "tiktok.com", "instagram.com", "threads.net",
   "pinterest.com", "tumblr.com", "discord.com", "reddit.com", "old.reddit.com",
@@ -47,7 +59,8 @@ function buildRules(domains) {
 function allManagedRuleIds() {
   return [
     ...FULL_BLOCK_DOMAINS.map((_, i) => i + 1),
-    ...PATH_BLOCK_RULES.map(r => r.id)
+    ...PATH_BLOCK_RULES.map(r => r.id),
+    ...ALLOW_RULES.map(r => r.id)
   ];
 }
 
@@ -90,7 +103,7 @@ async function getNextAlarmTimes(workStart, workEnd) {
 
 async function enableBlocking(siteToggles) {
   const enabled = FULL_BLOCK_DOMAINS.filter(d => siteToggles[d] !== false);
-  const rules = [...buildRules(enabled), ...PATH_BLOCK_RULES];
+  const rules = [...buildRules(enabled), ...PATH_BLOCK_RULES, ...ALLOW_RULES];
   await queueRuleUpdate(async () => {
     const existing = await chrome.declarativeNetRequest.getDynamicRules();
     const removeRuleIds = [...new Set([...existing.map(r => r.id), ...allManagedRuleIds()])];
