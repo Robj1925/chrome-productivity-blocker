@@ -1,7 +1,7 @@
 const params = new URLSearchParams(location.search);
 const site = params.get("site") || "this site";
 
-document.getElementById("siteName").textContent = `${site} is blocked`;
+document.getElementById("siteName").textContent = `${site} can wait.`;
 
 function fmt12(h, m) {
   const ampm = h >= 12 ? "PM" : "AM";
@@ -29,7 +29,7 @@ chrome.storage.sync.get({ workStart: "09:00", workEnd: "17:00" }, ({ workStart, 
   const [sh, sm] = workStart.split(":").map(Number);
   const [eh, em] = workEnd.split(":").map(Number);
   document.getElementById("workHours").textContent =
-    `Work hours: ${fmt12(sh, sm)} – ${fmt12(eh, em)}`;
+    `Focus hours: ${fmt12(sh, sm)} – ${fmt12(eh, em)}`;
   updateCountdown(workEnd);
   setInterval(() => updateCountdown(workEnd), 60000);
 });

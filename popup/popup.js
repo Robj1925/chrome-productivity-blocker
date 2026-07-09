@@ -20,10 +20,10 @@ async function loadStatus() {
 
   const badge = document.getElementById("statusBadge");
   if (status.blockingActive) {
-    badge.textContent = "Blocking ON";
+    badge.textContent = "Focus hours";
     badge.className = "badge badge-on";
   } else {
-    badge.textContent = "Blocking OFF";
+    badge.textContent = "Off hours";
     badge.className = "badge badge-off";
   }
 

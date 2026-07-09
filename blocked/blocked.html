@@ -3,99 +3,120 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Site Blocked</title>
+  <title>Not now</title>
   <script src="../utils/hash.js"></script>
   <style>
+    :root {
+      --bg: oklch(1 0 0);
+      --surface: oklch(0.967 0.005 57);
+      --line: oklch(0.90 0.008 57);
+      --ink: oklch(0.28 0.012 57);
+      --muted: oklch(0.47 0.012 57);
+      --primary: oklch(0.53 0.125 55);
+      --primary-deep: oklch(0.47 0.115 55);
+      --error: oklch(0.50 0.16 27);
+    }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background: #0f172a;
-      color: #f1f5f9;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 16px;
+      padding: 24px;
     }
-    .card {
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 16px;
-      padding: 48px 40px;
-      max-width: 400px;
+    .page {
+      max-width: 480px;
       width: 100%;
       text-align: center;
     }
-    .icon { font-size: 52px; margin-bottom: 20px; }
+    .mark {
+      width: 30px;
+      height: 30px;
+      color: var(--primary);
+      margin-bottom: 36px;
+    }
     .site-name {
-      font-size: 22px;
-      font-weight: 700;
-      color: #fb7185;
-      margin-bottom: 6px;
+      font-family: ui-serif, "New York", Georgia, "Times New Roman", serif;
+      font-size: 38px;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+      line-height: 1.15;
+      text-wrap: balance;
+      overflow-wrap: break-word;
+      margin-bottom: 18px;
     }
     .subtitle {
-      font-size: 13px;
-      color: #94a3b8;
+      font-size: 14px;
+      color: var(--muted);
       margin-bottom: 4px;
     }
     .countdown {
-      font-size: 13px;
-      color: #64748b;
-      margin-bottom: 36px;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--ink);
     }
-    hr {
-      border: none;
-      border-top: 1px solid #334155;
-      margin: 0 0 28px;
+    .bypass {
+      margin-top: 64px;
+      padding-top: 24px;
+      border-top: 1px solid var(--line);
     }
     .bypass-label {
-      font-size: 12px;
-      color: #94a3b8;
+      font-size: 13px;
+      color: var(--muted);
       margin-bottom: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
     }
     .input-row {
       display: flex;
       gap: 8px;
+      max-width: 340px;
+      margin: 0 auto;
     }
     input[type="password"] {
       flex: 1;
-      background: #0f172a;
-      border: 1px solid #334155;
+      min-width: 0;
+      background: var(--bg);
+      border: 1px solid var(--line);
       border-radius: 8px;
-      color: #f1f5f9;
+      color: var(--ink);
       font-size: 14px;
-      padding: 10px 14px;
+      font-family: inherit;
+      padding: 10px 13px;
       outline: none;
-      transition: border-color 0.15s;
+      transition: border-color 0.15s, box-shadow 0.15s;
     }
-    input[type="password"]:focus { border-color: #6366f1; }
+    input[type="password"]::placeholder { color: var(--muted); }
+    input[type="password"]:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px oklch(0.53 0.125 55 / 0.15);
+    }
     button {
-      background: #6366f1;
+      background: var(--primary);
       border: none;
       border-radius: 8px;
       color: #fff;
       cursor: pointer;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 600;
-      padding: 10px 16px;
+      font-family: inherit;
+      padding: 10px 18px;
       transition: background 0.15s;
       white-space: nowrap;
     }
-    button:hover { background: #4f46e5; }
+    button:hover { background: var(--primary-deep); }
+    button:focus-visible { outline: 2px solid var(--primary-deep); outline-offset: 2px; }
     .error-msg {
-      color: #fb7185;
-      font-size: 12px;
+      color: var(--error);
+      font-size: 13px;
       margin-top: 10px;
-      min-height: 16px;
+      min-height: 18px;
     }
     .footer {
-      margin-top: 36px;
-      color: #334155;
-      font-size: 11px;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
+      margin-top: 48px;
+      color: var(--muted);
+      font-size: 12px;
     }
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
@@ -105,21 +126,30 @@
       80% { transform: translateX(5px); }
     }
     .shake { animation: shake 0.35s ease; }
+    @media (prefers-reduced-motion: reduce) {
+      .shake { animation: none; }
+      * { transition: none !important; }
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="icon">🚫</div>
-    <div class="site-name" id="siteName">Site blocked</div>
-    <div class="subtitle" id="workHours">Work hours: 9:00 AM – 5:00 PM</div>
+  <div class="page">
+    <svg class="mark" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M12 2l8 3v6.09c0 5.05-3.41 9.76-8 10.91-4.59-1.15-8-5.86-8-10.91V5z"/>
+    </svg>
+    <h1 class="site-name" id="siteName">This site can wait.</h1>
+    <div class="subtitle" id="workHours">Focus hours: 9:00 AM – 5:00 PM</div>
     <div class="countdown" id="countdown"></div>
-    <hr>
-    <div class="bypass-label">Emergency bypass — 15 minutes</div>
-    <div class="input-row">
-      <input type="password" id="passwordInput" placeholder="Bypass password" autocomplete="off" />
-      <button id="bypassBtn">Unlock</button>
+
+    <div class="bypass">
+      <div class="bypass-label">Need it now? Unlock everything for 15 minutes.</div>
+      <div class="input-row">
+        <input type="password" id="passwordInput" placeholder="Bypass password" autocomplete="off" />
+        <button id="bypassBtn">Unlock</button>
+      </div>
+      <div class="error-msg" id="errorMsg"></div>
     </div>
-    <div class="error-msg" id="errorMsg"></div>
+
     <div class="footer">Productivity Blocker</div>
   </div>
   <script src="blocked.js"></script>
