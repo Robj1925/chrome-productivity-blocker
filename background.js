@@ -20,24 +20,30 @@ const PATH_BLOCK_RULES = [
 // blocked in BOTH work hours and off-hours, EXCEPT /tiktokstudio. Unlike the
 // work-hours block list, these rules persist off-hours. They respect the user's
 // per-site toggle (unchecking TikTok in Options opens the whole domain again).
-const ALWAYS_ON_RULE_IDS = [200, 201];
+// Paths that stay reachable on tiktok.com. /tiktokstudio is the dashboard;
+// /login is required because a logged-out Studio visit redirects there to
+// authenticate (then bounces back to /tiktokstudio).
+const TIKTOK_ALLOW_PATHS = ["tiktokstudio", "login"];
+const ALWAYS_ON_RULE_IDS = [200, 201, 202];
 function alwaysOnRules(siteToggles) {
   if (siteToggles["tiktok.com"] === false) return [];
-  return [
+  const rules = [
     {
       id: 200,
       priority: 1,
       action: { type: "redirect", redirect: { extensionPath: "/blocked/blocked.html?site=tiktok.com" } },
       condition: { urlFilter: "||tiktok.com^", resourceTypes: ["main_frame"] }
-    },
-    {
-      // TikTok Studio (creator dashboard) — always reachable (higher priority wins)
-      id: 201,
-      priority: 2,
-      action: { type: "allow" },
-      condition: { urlFilter: "||tiktok.com/tiktokstudio", resourceTypes: ["main_frame"] }
     }
   ];
+  TIKTOK_ALLOW_PATHS.forEach((path, i) => {
+    rules.push({
+      id: 201 + i,
+      priority: 2, // beats the redirect (priority 1)
+      action: { type: "allow" },
+      condition: { urlFilter: `||tiktok.com/${path}`, resourceTypes: ["main_frame"] }
+    });
+  });
+  return rules;
 }
 
 const FULL_BLOCK_DOMAINS = [
