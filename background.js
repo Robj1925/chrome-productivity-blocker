@@ -1,4 +1,5 @@
 // LinkedIn feed is handled purely by the content script (blanked, not redirected).
+// TikTok videos are handled by a content script (blocked except Studio).
 // Only YouTube Shorts URLs get a network-level redirect.
 const PATH_BLOCK_RULES = [
   {
@@ -15,36 +16,6 @@ const PATH_BLOCK_RULES = [
     condition: { regexFilter: "^https?://(www\\.)?youtube\\.com/$", resourceTypes: ["main_frame"] }
   }
 ];
-
-// TikTok is locked to the Studio (creator) dashboard 24/7: the whole domain is
-// blocked in BOTH work hours and off-hours, EXCEPT /tiktokstudio. Unlike the
-// work-hours block list, these rules persist off-hours. They respect the user's
-// per-site toggle (unchecking TikTok in Options opens the whole domain again).
-// Paths that stay reachable on tiktok.com. /tiktokstudio is the dashboard;
-// /login is required because a logged-out Studio visit redirects there to
-// authenticate (then bounces back to /tiktokstudio).
-const TIKTOK_ALLOW_PATHS = ["tiktokstudio", "login"];
-const ALWAYS_ON_RULE_IDS = [200, 201, 202];
-function alwaysOnRules(siteToggles) {
-  if (siteToggles["tiktok.com"] === false) return [];
-  const rules = [
-    {
-      id: 200,
-      priority: 1,
-      action: { type: "redirect", redirect: { extensionPath: "/blocked/blocked.html?site=tiktok.com" } },
-      condition: { urlFilter: "||tiktok.com^", resourceTypes: ["main_frame"] }
-    }
-  ];
-  TIKTOK_ALLOW_PATHS.forEach((path, i) => {
-    rules.push({
-      id: 201 + i,
-      priority: 2, // beats the redirect (priority 1)
-      action: { type: "allow" },
-      condition: { urlFilter: `||tiktok.com/${path}`, resourceTypes: ["main_frame"] }
-    });
-  });
-  return rules;
-}
 
 const FULL_BLOCK_DOMAINS = [
   "twitter.com", "x.com", "instagram.com", "threads.net",
@@ -77,8 +48,7 @@ function buildRules(domains) {
 function allManagedRuleIds() {
   return [
     ...FULL_BLOCK_DOMAINS.map((_, i) => i + 1),
-    ...PATH_BLOCK_RULES.map(r => r.id),
-    ...ALWAYS_ON_RULE_IDS
+    ...PATH_BLOCK_RULES.map(r => r.id)
   ];
 }
 
@@ -99,21 +69,13 @@ async function replaceRules(addRules) {
   });
 }
 
-// Work hours: full block list + path redirects + always-on TikTok lock.
 async function enableBlocking(siteToggles) {
   const enabled = FULL_BLOCK_DOMAINS.filter(d => siteToggles[d] !== false);
-  await replaceRules([...buildRules(enabled), ...PATH_BLOCK_RULES, ...alwaysOnRules(siteToggles)]);
+  await replaceRules([...buildRules(enabled), ...PATH_BLOCK_RULES]);
   await chrome.storage.sync.set({ blockingActive: true });
 }
 
-// Off-hours: only the always-on rules remain (TikTok locked to Studio).
-async function applyOffHours(siteToggles) {
-  await replaceRules(alwaysOnRules(siteToggles));
-  await chrome.storage.sync.set({ blockingActive: false });
-}
-
-// Bypass window: clear everything so all sites (including TikTok) are reachable.
-async function clearAllRules() {
+async function disableBlocking() {
   await replaceRules([]);
   await chrome.storage.sync.set({ blockingActive: false });
 }
@@ -168,11 +130,11 @@ async function reconcileState() {
   if (bypassActive) {
     const existing = await chrome.alarms.get("bypass-expiry");
     if (!existing) await chrome.alarms.create("bypass-expiry", { when: data.bypassUntil });
-    await clearAllRules();
+    await disableBlocking();
   } else if (isWorkHours(data.workStart, data.workEnd)) {
     await enableBlocking(data.siteToggles);
   } else {
-    await applyOffHours(data.siteToggles);
+    await disableBlocking();
   }
 
   await scheduleAlarms(data.workStart, data.workEnd);
@@ -225,7 +187,7 @@ chrome.alarms.onAlarm.addListener(async alarm => {
     await chrome.alarms.create("work-start", { when: nextStartMs });
 
   } else if (alarm.name === "work-end") {
-    if (!bypassActive) await applyOffHours(data.siteToggles);
+    if (!bypassActive) await disableBlocking();
     const { nextEndMs } = await getNextAlarmTimes(data.workStart, data.workEnd);
     await chrome.alarms.create("work-end", { when: nextEndMs });
 
@@ -251,7 +213,7 @@ async function handleMessage(message) {
 
     const bypassUntil = Date.now() + 15 * 60 * 1000;
     await chrome.storage.sync.set({ bypassUntil });
-    await clearAllRules();
+    await disableBlocking();
     await chrome.alarms.create("bypass-expiry", { when: bypassUntil });
     notifyContentScripts({ type: "BYPASS_ACTIVE" });
     return { success: true, bypassUntil };

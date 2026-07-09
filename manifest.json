@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Productivity Blocker",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Blocks distracting websites during work hours (9am–5pm).",
   "permissions": [
     "declarativeNetRequest",
@@ -55,6 +55,11 @@
       "matches": ["*://twitter.com/*", "*://www.twitter.com/*", "*://x.com/*", "*://www.x.com/*"],
       "js": ["content-scripts/twitter.js"],
       "run_at": "document_idle"
+    },
+    {
+      "matches": ["*://tiktok.com/*", "*://www.tiktok.com/*"],
+      "js": ["content-scripts/tiktok.js"],
+      "run_at": "document_start"
     }
   ],
   "web_accessible_resources": [

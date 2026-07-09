@@ -1,7 +1,6 @@
 const DOMAINS = [
   { domain: "twitter.com",      category: "Social" },
   { domain: "x.com",            category: "Social" },
-  { domain: "tiktok.com",       category: "Social" },
   { domain: "instagram.com",    category: "Social" },
   { domain: "threads.net",      category: "Social" },
   { domain: "pinterest.com",    category: "Social" },
