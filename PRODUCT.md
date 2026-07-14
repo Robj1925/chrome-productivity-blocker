@@ -10,7 +10,7 @@ One person at a desk during their own declared work hours (default 9–5), usual
 
 ## Product Purpose
 
-Productivity Blocker enforces focus during user-configured work hours: full blocks on distracting domains, feed/recommendation blanking on YouTube/LinkedIn/Facebook/Twitter, TikTok videos blocked around the clock (except TikTok Studio), and a password-gated 15-minute bypass. Success = the user stays on task and the tool never feels hostile enough to uninstall.
+Productivity Blocker enforces focus during user-configured work hours: full blocks on distracting domains, feed/recommendation blanking on YouTube/LinkedIn/Facebook, Twitter/X and TikTok videos blocked around the clock (TikTok except Studio), and a password-gated 15-minute bypass. Success = the user stays on task and the tool never feels hostile enough to uninstall.
 
 ## Brand Personality
 

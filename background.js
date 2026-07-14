@@ -17,8 +17,26 @@ const PATH_BLOCK_RULES = [
   }
 ];
 
+// Blocked 24/7 — during work hours AND off-hours. Only a password bypass opens
+// them (for its 15-minute window). Respect the per-site toggle in Options.
+const ALWAYS_BLOCK_DOMAINS = ["twitter.com", "x.com"];
+const ALWAYS_ON_RULE_IDS = ALWAYS_BLOCK_DOMAINS.map((_, i) => 200 + i);
+
+function alwaysOnRules(siteToggles) {
+  return ALWAYS_BLOCK_DOMAINS
+    .map((domain, i) => ({ domain, id: 200 + i }))
+    .filter(({ domain }) => siteToggles[domain] !== false)
+    .map(({ domain, id }) => ({
+      id,
+      priority: 1,
+      action: { type: "redirect", redirect: { extensionPath: `/blocked/blocked.html?site=${domain}` } },
+      condition: { urlFilter: `||${domain}^`, resourceTypes: ["main_frame"] }
+    }));
+}
+
+// Blocked only during work hours.
 const FULL_BLOCK_DOMAINS = [
-  "twitter.com", "x.com", "instagram.com", "threads.net",
+  "instagram.com", "threads.net",
   "pinterest.com", "tumblr.com", "discord.com", "reddit.com", "old.reddit.com",
   "9gag.com", "imgur.com", "twitch.tv", "netflix.com", "hulu.com",
   "disneyplus.com", "max.com", "primevideo.com", "peacocktv.com",
@@ -48,7 +66,8 @@ function buildRules(domains) {
 function allManagedRuleIds() {
   return [
     ...FULL_BLOCK_DOMAINS.map((_, i) => i + 1),
-    ...PATH_BLOCK_RULES.map(r => r.id)
+    ...PATH_BLOCK_RULES.map(r => r.id),
+    ...ALWAYS_ON_RULE_IDS
   ];
 }
 
@@ -69,13 +88,21 @@ async function replaceRules(addRules) {
   });
 }
 
+// Work hours: full block list + path redirects + always-on domains.
 async function enableBlocking(siteToggles) {
   const enabled = FULL_BLOCK_DOMAINS.filter(d => siteToggles[d] !== false);
-  await replaceRules([...buildRules(enabled), ...PATH_BLOCK_RULES]);
+  await replaceRules([...buildRules(enabled), ...PATH_BLOCK_RULES, ...alwaysOnRules(siteToggles)]);
   await chrome.storage.sync.set({ blockingActive: true });
 }
 
-async function disableBlocking() {
+// Off-hours: only the always-on domains stay blocked (Twitter/X).
+async function applyOffHours(siteToggles) {
+  await replaceRules(alwaysOnRules(siteToggles));
+  await chrome.storage.sync.set({ blockingActive: false });
+}
+
+// Bypass window: clear everything so all sites are reachable.
+async function clearAllRules() {
   await replaceRules([]);
   await chrome.storage.sync.set({ blockingActive: false });
 }
@@ -130,11 +157,11 @@ async function reconcileState() {
   if (bypassActive) {
     const existing = await chrome.alarms.get("bypass-expiry");
     if (!existing) await chrome.alarms.create("bypass-expiry", { when: data.bypassUntil });
-    await disableBlocking();
+    await clearAllRules();
   } else if (isWorkHours(data.workStart, data.workEnd)) {
     await enableBlocking(data.siteToggles);
   } else {
-    await disableBlocking();
+    await applyOffHours(data.siteToggles);
   }
 
   await scheduleAlarms(data.workStart, data.workEnd);
@@ -187,7 +214,7 @@ chrome.alarms.onAlarm.addListener(async alarm => {
     await chrome.alarms.create("work-start", { when: nextStartMs });
 
   } else if (alarm.name === "work-end") {
-    if (!bypassActive) await disableBlocking();
+    if (!bypassActive) await applyOffHours(data.siteToggles);
     const { nextEndMs } = await getNextAlarmTimes(data.workStart, data.workEnd);
     await chrome.alarms.create("work-end", { when: nextEndMs });
 
@@ -213,7 +240,7 @@ async function handleMessage(message) {
 
     const bypassUntil = Date.now() + 15 * 60 * 1000;
     await chrome.storage.sync.set({ bypassUntil });
-    await disableBlocking();
+    await clearAllRules();
     await chrome.alarms.create("bypass-expiry", { when: bypassUntil });
     notifyContentScripts({ type: "BYPASS_ACTIVE" });
     return { success: true, bypassUntil };

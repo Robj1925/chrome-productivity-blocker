@@ -8,7 +8,7 @@ A Chrome extension (Manifest V3) that keeps you focused during your work hours b
 - **Full-site blocking** — distracting domains (social, streaming, news, NSFW, etc.) redirect to a local "blocked" page during work hours.
 - **Feed & Shorts hiding** — on YouTube, LinkedIn, and Facebook the feed/recommendations are hidden so direct links still work, but the infinite scroll doesn't.
 - **TikTok videos blocked** — every video on TikTok is hidden and paused around the clock, except in the TikTok Studio creator dashboard (`/tiktokstudio`). The rest of TikTok stays usable.
-- **Always-on Twitter/X feed control** — the Twitter/X home feed stays blanked around the clock, even outside work hours. Profiles, direct links, messages, and search remain usable.
+- **Twitter/X blocked 24/7** — twitter.com and x.com are fully blocked around the clock, work hours and off-hours. Only a password bypass opens them (for 15 minutes).
 - **YouTube → Subscriptions** — the YouTube homepage redirects to your Subscriptions feed instead of the recommendation grid.
 - **Password bypass** — a salted, hashed password unlocks blocking for a 15-minute window when you genuinely need it.
 - **Configurable** — set your hours, change the password, and toggle individual sites from the options page.
