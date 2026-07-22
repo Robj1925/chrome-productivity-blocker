@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Productivity Blocker",
-  "version": "1.5.0",
-  "description": "Blocks distracting websites during work hours (9am–5pm).",
+  "name": "Locked In",
+  "version": "1.6.0",
+  "description": "Blocks distracting sites on your schedule, and keeps Twitter, X, and TikTok videos blocked around the clock.",
   "permissions": [
     "declarativeNetRequest",
     "storage",
