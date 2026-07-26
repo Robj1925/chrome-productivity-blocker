@@ -1,5 +1,7 @@
 # Locked In
 
+**[Add to Chrome](https://chromewebstore.google.com/detail/locked-in/dnodlniomejnjijbgcbdofpcblofldpk)** · Available now on the Chrome Web Store.
+
 A Chrome extension (Manifest V3) that helps you stay locked in during your work hours by blocking distracting websites and hiding the feeds that pull you in. It follows a schedule you set, and keeps the worst offenders blocked around the clock.
 
 ## How it works
@@ -34,7 +36,15 @@ Set a password in Options. When you genuinely need a blocked site, enter the pas
 - Set or change your bypass password.
 - Toggle any of the 30 listed sites on or off. (YouTube, TikTok, LinkedIn, and Facebook are handled by the dedicated logic above and are not in the toggle list.)
 
-## Install (developer / unpacked)
+## Install
+
+### From the Chrome Web Store (recommended)
+
+Install it here: **https://chromewebstore.google.com/detail/locked-in/dnodlniomejnjijbgcbdofpcblofldpk**
+
+Then open the extension's **Options** and set a bypass password.
+
+### Developer / unpacked
 
 1. Clone or download this repo.
 2. Open `chrome://extensions` and enable **Developer mode**.
